@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+
+
+
+    <form method="post">
+        <p>Выберите категорию</p>
+        <select name="id_category">
+            {% for id, title in category_list %}
+                <option value="{{id}}">{{title}}</option>
+            {% endfor %}
+        </select>
+
+        <p>Введите название</p>
+        <input type="text" name="title">
+
+        <p>Введите контент</p>
+        <textarea name="text"></textarea>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    
+</body>
+</html>
