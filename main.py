@@ -73,11 +73,10 @@ def view_discussion_topic(id: int = None):
         if session.get("id_user") >= 1:
             current_datetime = datetime.now()
             datetime_str = current_datetime.strftime('%Y-%m-%d %H:%M:%S')
-            x = db_scripts.add_comment_(id,
+            x = db_scripts.add_comment(id,
                                     session.get("text"),
                                     str(request.form.get("text")),
                                     datetime_str)
-            print(x)
 
     if creator:
         if request.method == "PUT":
