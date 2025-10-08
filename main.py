@@ -64,10 +64,6 @@ def category_discussion_topic(id_category: int):
 @app.route("/discussion_topic/<int:id>", methods=["GET", "POST"], endpoint="view_discussion_topic")
 def view_discussion_topic(id: int = None):
     data = db_scripts.get_discussion_topic(id)
-    
-    creator = session.get("id_user") == data[2]
-    all_comment = db_scripts.get_all_comment(id)
-    
     session["id_user"] = 1
     if request.method == "POST" and session.get("id_user"):
         if session.get("id_user") >= 1:
@@ -77,7 +73,8 @@ def view_discussion_topic(id: int = None):
                                     session.get("text"),
                                     str(request.form.get("text")),
                                     datetime_str)
-
+            
+    creator = session.get("id_user") == data[2]
     if creator:
         if request.method == "PUT":
             pass
@@ -85,7 +82,7 @@ def view_discussion_topic(id: int = None):
             pass
         elif request.method == "DELETE":
             pass
-
+    all_comment = db_scripts.get_all_comment(id)
     return render_template(
         "discussion_topic/view_discussion_topic.html",
         creator=creator,
