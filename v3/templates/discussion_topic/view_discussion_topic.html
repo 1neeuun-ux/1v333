@@ -16,13 +16,17 @@
 
 
 {% block main %}
+{{creator}}<br>
+{{data}}<br>
+{{topic_title}}<br>
+{{topic_text}}<br>
 
 <form method="post">
-    <p>Login:
-    <input type ="text" name = "login"></p>
-    <p>Password1: <input type = "text" name = "pass1"></p>
-    <p>Password2: <input type = "text" name = "pass2"></p>
+    <p>Choose comment</p>
+    <textarea name="text"></textarea>
     <input type="submit" value="Submit">
 </form>
+
+{{all_comment}}
 
 {% endblock %}

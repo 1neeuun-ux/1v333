@@ -9,7 +9,7 @@ app = Flask(__name__,
             template_folder=os.path.join(path, "template"),
             static_folder=os.path.join(path, "static"))
 
-app.config['SECRET_KEY'] = ""
+app.config['SECRET_KEY'] = "L54?x*,:LZSx8$!Q7zsS3{g~qV9x8hD6"
 
 def isLOgin(funk):
     def x(*args, **kwargs):
@@ -28,14 +28,15 @@ def index():
 @app.route("/registration", endpoint="registration")
 def registration():
     session["id_user"] = 1
+    return "You registraited"
     
 
-@app.route("/login", endpoint="registration")
+@app.route("/login", endpoint="login")
 def registration():
     session["is_user"] = 1
+    return "You entered"
     
-    
-@app.route("/login", endpoibt="login")
+@app.route("/login", endpoint="logout")
 def logout():
     del session["id_user"]
-    redirect(url_for("login"))
+    return redirect(url_for("login"))

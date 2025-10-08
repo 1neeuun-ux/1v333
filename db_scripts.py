@@ -1,7 +1,8 @@
 import sqlite3
 import os
 
-path = os.path.join(os.getcwd() ,"v3","data","db.db")
+path = os.path.join("db.db")
+
 
 db_path = path
 DB = None
@@ -344,7 +345,7 @@ def get_discussion_topic(id_discussion_topic:int):
     try:
         if id_discussion_topic is not None:
             cursor.execute("""SELECT * FROM discussion_topic
-                              WHERE id_discussion_topic = ?
+                              WHERE id = ?
                            """, (id_discussion_topic,))
             return cursor.fetchone()
         return False
@@ -357,18 +358,19 @@ def get_discussion_topic(id_discussion_topic:int):
 
 # ==================== comment ===================       
 @db_deck
-def add_comment_(id_discussion: int, id_user: int, text: str, date: str):
+def add_comment(id_discussion: int, id_user: int, text: str, date: str):
     try:
         text = text.strip()
         if text == "":
             return False
         
-        cursor.execute("""INSERT INTO comment(id_discussion, id_user, text, date)
+        cursor.execute("""INSERT INTO comment(id_discussion_topic, id_user, text, date)
                           VALUES (?, ?, ?, ?)""",
                        (id_discussion, id_user, text, date))
         return cursor.lastrowid
-    except:
-        return False
+    except Exception as error:
+        print("error add_comment_:", error)
+    return False
 
 
 
@@ -402,17 +404,18 @@ def del_comment(id_comment: int):
     
 
 @db_deck
-def get_all_(id_discussion: int):
+def get_all_comment(id_discussion: int):
     try:
         if id_discussion <= 0:
             return False
         
         cursor.execute("""SELECT * FROM comment
-                          WHERE id_discussion = ?
-                          ORDER BY id_comment DESC""", (id_discussion,))
+                          WHERE id_discussion_topic = ?
+                          ORDER BY id DESC""", (id_discussion,))
         return cursor.fetchall()
-    except:
-        return False
+    except Exception as error:
+        print("error add_comment_:", error)
+    return False
 
 
 

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Comments{% endblock %}
+
+{% block main %}
+
+
+
+<h2>Comments</h2>
+
+<div class="message">
+    <div class="author">user</div>
+</div>
+
+
+
+<form method="post">
+    <textarea name="comment" placeholder="Write something" 
+    style="width:100%; height:60px;"></textarea>
+    <br>
+    <input type="submit" value="Send">
+</form>
+
+
+{% endblock %}
