@@ -1,32 +1,38 @@
 {% extends "base.html" %}
 
-{% block styles %}
-<link href="{{url_for('static', filename='discussion topic/discussion_topic.css') }}" rel="stylesheet">
-<style>
-</style>
-
-{% endblock %}
-{% block scripts %}
-<script>
-</script>
-{% endblock %}
-
-
-{% block title %}discussion topic{% endblock %}
-
+{% block title %}View Discussion Topic{% endblock %}
 
 {% block main %}
-{{creator}}<br>
-{{data}}<br>
-{{topic_title}}<br>
-{{topic_text}}<br>
+<div class="container py-5">
+  <h2>{{ topic_title }}</h2>
+  <p class="mb-4">{{ topic_text }}</p>
 
-<form method="post">
-    <p>Choose comment</p>
-    <textarea name="text"></textarea>
-    <input type="submit" value="Submit">
-</form>
+  <hr>
 
-{{all_comment}}
+  <h4>Comments</h4>
 
+
+  {% for comment_id, user_id, id_discussion_topic, comment_text, comment_date in comment_list %}
+  <div class="border p-3 rounded mb-3">
+    <p><strong>{{ user_email }}</strong> said:</p>
+    <p>{{ comment_text }}</p>
+    <small class="text-muted">{{ comment_date }}</small>
+
+    {% if creator %}
+      <a href="/discussion_topic/{{id_discussion_topic}}/delete_comment/{{comment_id}}">
+        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+      </a>
+    {% endif %}
+
+  </div>
+  {% endfor %}
+
+  <hr>
+
+  <h5>Add a comment</h5>
+  <form method="POST" action="{{ url_for('view_discussion_topic', id=topic_id) }}">
+    <textarea name="text" class="form-control mb-2" rows="3" placeholder="Write your comment here..."></textarea>
+    <input type="submit" value="Submit" class="btn btn-primary">
+  </form>
+</div>
 {% endblock %}

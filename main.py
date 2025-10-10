@@ -2,9 +2,8 @@ from flask import Flask, redirect, url_for, request, session, render_template
 import db_scripts
 from datetime import datetime
 import os
-
-
 from dotenv import load_dotenv
+
 path = os.getcwd()
 
 app = Flask(__name__,
@@ -20,6 +19,7 @@ app.config["SECRET_KEY"] = SECRET_KEY
 def index():
     return redirect(url_for("discussion_topic"))
 
+
 @app.route("/discussion_topic", endpoint="discussion_topic")
 def discussion_topic():
     category_list = db_scripts.get_all_category()
@@ -28,8 +28,9 @@ def discussion_topic():
     return render_template("discussion_topic/discussion_topic.html", 
                            category_list=category_list, 
                            data=all_discussion_topic, 
-                           id_user=session.get("id_user"))
-
+                           id_user=session.get("email_user"),
+                           id_user=session.get("id_user")
+                           )
 
 
 @app.route("/discussion_topic/create", methods=["GET", "POST"], endpoint="discussion_topic_create")
@@ -46,7 +47,7 @@ def discussion_topic_create():
             else:
                 return render_template("404.html")
         except Exception as e:
-            print("Error whil adding theme:", e)
+            print("Error while adding theme:", e)
             return render_template("404.html")
 
     category_list = db_scripts.get_all_category()
@@ -58,66 +59,90 @@ def category_discussion_topic(id_category: int):
     data = db_scripts.get_category_discussion_topic(id_category)
     if request.method == "POST":
         pass
-    return render_template("discussion_topic/category_discussion_topic.html", data=data)
+    return render_template("discussion_topic/category_discussion_topic.html", data=data, 
+                           id_user=session.get("id_user"))
 
 
 @app.route("/discussion_topic/<int:id>", methods=["GET", "POST"], endpoint="view_discussion_topic")
 def view_discussion_topic(id: int = None):
     data = db_scripts.get_discussion_topic(id)
-    session["id_user"] = 1
     if request.method == "POST" and session.get("id_user"):
         if session.get("id_user") >= 1:
             current_datetime = datetime.now()
             datetime_str = current_datetime.strftime('%Y-%m-%d %H:%M:%S')
-            x = db_scripts.add_comment(id,
-                                    session.get("text"),
-                                    str(request.form.get("text")),
-                                    datetime_str)
-            
+            x = db_scripts.add_comment(
+                id,
+                session.get("id_user"),
+                request.form.get("text"),
+                datetime_str
+            )
+
     creator = session.get("id_user") == data[2]
-    if creator:
-        if request.method == "PUT":
-            pass
-        elif request.method == "PATCH":
-            pass
-        elif request.method == "DELETE":
-            pass
     all_comment = db_scripts.get_all_comment(id)
     return render_template(
         "discussion_topic/view_discussion_topic.html",
         creator=creator,
         data=data,
+        topic_id=id,
         topic_title=data[3],
         topic_text=data[4],
-        all_comment = all_comment
+        comment_list=all_comment, 
+        id_user=session.get("id_user")
     )
 
 
-@app.route("/Login_user", methods=["GET", "POST"], endpoint="Login")
+@app.route("/Login", methods=["GET", "POST"], endpoint="Login")
 def Login():
-    login = request.form.get("login")
-    password = request.form.get("pass")
-    id = db_scripts.login_user(login, password)
-    if id:
-        session["id_user"] = id
-        return redirect(url_for("discussion_topic"))
-    return render_template("login/login.html")    
+    if request.method == "POST":
+        login_email = request.form.get("login")
+        password = request.form.get("pass")
+        id_user = db_scripts.login_user(login_email, password)
+        if id_user:
+            session["id_user"] = id_user
+            session["id_email"] = login_email
+            return redirect(url_for("discussion_topic"))
+        error = "Error"
+        return render_template("login/login.html", error=error, 
+                           id_user=session.get("id_user"))
     
-@app.route("/Registration_user", methods=["GET", "POST"], endpoint="Registration")
-def Registration():
-    login = request.form.get("login")
-    password1 = request.form.get("pass1")
-    password2 = request.form.get("pass2")
-    id = db_scripts.registration_user(login, password1, password2)
-    if id:
-        session["id_user"] = id
-        return redirect(url_for("discussion_topic"))
-    return render_template("login/Registration.html")   
+    return render_template("login/login.html", 
+                           id_user=session.get("id_user"))
+  
+
+
+@app.route("/Registration", methods=["GET", "POST"], endpoint="Registration")
+def Login():
+    error = None
+    if request.method == "POST":
+        login_email = request.form.get("login")
+        password1 = request.form.get("pass1")
+        password2 = request.form.get("pass2")
+        id_user = db_scripts.registration_user(login_email, password1, password2)
+        if id_user:
+            session["id_user"] = id_user
+            return redirect(url_for("discussion_topic"))
+        else:
+            error = "Not correcr password"
+    return render_template("login/Registration.html", error=error, 
+                           id_user=session.get("id_user"))
+
+ 
+
 
 @app.route("/Exit", endpoint="Exit")
 def Exit():
     del session["id_user"]
-    session["id_user"] = -1
+    del session["id_email"]
+    #session["id_user"] = -1
     return redirect(url_for("discussion_topic"))
+
+@app.route("/discussion_topic/<int:topic_id>/delete_comment/<int:id_comment>", methods=["GET","POST"])
+def delete_comment(topic_id,id_comment):
+    if request.method == "POST":
+        id_comment1 = request.form.get("id_comment")
+        print(id_comment1)
+        # db_scripts.del_comment(int(id_comment1))
+    return redirect(f"/discussion_topic/{topic_id}")
+
 
 app.run(host="0.0.0.0", port=5000)

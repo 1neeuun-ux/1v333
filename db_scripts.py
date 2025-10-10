@@ -221,24 +221,22 @@ def registration_user(email:str, password:str, password2:str):
     return id_user
 
 @db_deck
-def login_user(email:str,password:str):
-    password = password.split()
-    if is_valid_email(email) or password != "" or not check_user(email):
-        return False
-
-    cursor.execute("""SELECT id,hash_password,sale FROM user
-                   WHERE email = ? """, (email,))
-    id_user,hash_password,sale = cursor.fetchone()
+def login_user(email: str, password: str):
+    email = email.strip()
+    password = password.strip()
     
-    if hash_password == hash_pass(password, sale):
+    if email == "" or password == "" or not check_user(email):
+        return False
+    
+    cursor.execute("SELECT id, hash_password, sale FROM user WHERE email = ?", (email,))
+    row = cursor.fetchone()
+    if not row:
+        return False
+    
+    id_user, hash_password_db, salt = row
+    if hash_pass(password, salt) == hash_password_db:
         return id_user
     return False
-
-
-def _user():
-    pass
-def _user():
-    pass
 
 def check_user(email:str):
     try:
@@ -383,7 +381,7 @@ def update_comment(id_comment: int, text: str):
         
         cursor.execute("""UPDATE comment
                           SET text = ?
-                          WHERE id_comment = ?""",
+                          WHERE id = ?""",
                        (text, id_comment))
         return cursor.lastrowid
     except:
@@ -395,12 +393,15 @@ def del_comment(id_comment: int):
     try:
         if id_comment <= 0:
             return False
-        
-        cursor.execute("""DELETE FROM comment
-                          WHERE id_comment = ?""", (id_comment,))
-        return cursor.lastrowid
-    except:
+
+        cursor.execute("DELETE FROM comment WHERE id = ?", (int(id_comment),))
+        cursor.connection.commit() 
+        return cursor.rowcount  
+    except Exception as e:
+        print("Ошибка при удалении комментария:", e)
         return False
+
+
     
 
 @db_deck
@@ -409,7 +410,8 @@ def get_all_comment(id_discussion: int):
         if id_discussion <= 0:
             return False
         
-        cursor.execute("""SELECT * FROM comment
+        cursor.execute("""SELECT id , id_user, id_discussion_topic, text, date  
+                          FROM comment
                           WHERE id_discussion_topic = ?
                           ORDER BY id DESC""", (id_discussion,))
         return cursor.fetchall()
@@ -478,7 +480,7 @@ def del_tag(id_tag: int):
             return False
 
         cursor.execute("""DELETE FROM tag 
-                          WHERE id_tag = ?""", (id_tag,))
+                          WHERE id = ?""", (id_tag,))
     except Exception as error:
         print("error del_tag:", error)
         return False
