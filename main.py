@@ -17,17 +17,22 @@ app.config["SECRET_KEY"] = SECRET_KEY
 
 @app.route("/", endpoint="index", methods=["GET"])
 def index():
-    return redirect(url_for("discussion_topic"))
+    if "id_user" in session.keys():
+        return redirect(url_for("discussion_topic"))
+    else:
+        return redirect(url_for("Login"))
 
 
 @app.route("/discussion_topic", endpoint="discussion_topic")
 def discussion_topic():
+    if "id_user" not in session.keys():
+        return redirect(url_for("index"))
     category_list = db_scripts.get_all_category()
     all_discussion_topic = db_scripts.get_all_category_or_discussion_topic()
-    print()
     return render_template("discussion_topic/discussion_topic.html", 
                            category_list=category_list, 
                            data=all_discussion_topic, 
+                           id_email=session.get("email_user"),
                            id_user=session.get("id_user")
                            )
 
@@ -131,10 +136,11 @@ def Login():
 
 @app.route("/Exit", endpoint="Exit")
 def Exit():
-    del session["id_user"]
-    del session["id_email"]
-    #session["id_user"] = -1
-    return redirect(url_for("discussion_topic"))
+    if "id_user" in session.keys():
+        del session["id_user"]
+    if "id_email" in session.keys():
+        del session["id_email"]
+    return redirect(url_for("index"))
 
 @app.route("/discussion_topic/<int:topic_id>/delete_comment/<int:id_comment>", methods=["GET","POST"])
 def delete_comment(topic_id,id_comment):
