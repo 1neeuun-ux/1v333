@@ -2,37 +2,96 @@
 
 {% block title %}View Discussion Topic{% endblock %}
 
+{% block styles %}
+<style>
+  .topic-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  }
+
+  .topic-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #222;
+  }
+
+  .topic-text {
+    color: #555;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 30px;
+  }
+
+  .section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 6px;
+  }
+
+  .comment-box {
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+  }
+
+  .comment-box p {
+    margin-bottom: 6px;
+  }
+
+  .btn-primary-custom {
+    background-color: #0056ff;
+    border: none;
+    color: white;
+    border-radius: 20px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
+
+  .btn-primary-custom:hover {
+    background-color: #003ed9;
+  }
+
+  textarea.form-control {
+    border-radius: 10px;
+  }
+</style>
+{% endblock %}
+
 {% block main %}
-<div class="container py-5">
-  <h2>{{ topic_title }}</h2>
-  <p class="mb-4">{{ topic_text }}</p>
+<div class="topic-container">
+  <h2 class="topic-title">{{ topic_title }}</h2>
+  <p class="topic-text">{{ topic_text }}</p>
 
-  <hr>
+  <h4 class="section-title mt-4">Comments</h4>
 
-  <h4>Comments</h4>
+  {% for comment_id, user_id, id_discussion_topic, comment_text, comment_date, comment_user_email in comment_list %}
+    <div class="comment-box">
+      <p><strong>{{ comment_user_email }}</strong></p>
+      <p>{{ comment_text }}</p>
+      <small class="text-muted">{{ comment_date }}</small>
 
-
-  {% for comment_id, user_id, id_discussion_topic, comment_text, comment_date in comment_list %}
-  <div class="border p-3 rounded mb-3">
-    <p><strong>{{ user_email }}</strong> said:</p>
-    <p>{{ comment_text }}</p>
-    <small class="text-muted">{{ comment_date }}</small>
-
-    {% if creator %}
-      <a href="/discussion_topic/{{id_discussion_topic}}/delete_comment/{{comment_id}}">
-        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-      </a>
-    {% endif %}
-
-  </div>
+      {% if creator %}
+        <div class="mt-2">
+          <a href="/discussion_topic/{{id_discussion_topic}}/delete_comment/{{comment_id}}">
+            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+          </a>
+        </div>
+      {% endif %}
+    </div>
   {% endfor %}
 
-  <hr>
-
-  <h5>Add a comment</h5>
+  <h5 class="section-title mt-4">Add a comment</h5>
   <form method="POST" action="{{ url_for('view_discussion_topic', id=topic_id) }}">
-    <textarea name="text" class="form-control mb-2" rows="3" placeholder="Write your comment here..."></textarea>
-    <input type="submit" value="Submit" class="btn btn-primary">
+    <textarea name="text" class="form-control mb-3" rows="3" placeholder="Write your comment here..."></textarea>
+    <button type="submit" class="btn btn-primary-custom px-4">Submit</button>
   </form>
 </div>
 {% endblock %}

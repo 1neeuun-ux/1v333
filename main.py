@@ -28,9 +28,9 @@ def discussion_topic():
     return render_template("discussion_topic/discussion_topic.html", 
                            category_list=category_list, 
                            data=all_discussion_topic, 
-                           id_user=session.get("email_user"),
                            id_user=session.get("id_user")
                            )
+
 
 
 @app.route("/discussion_topic/create", methods=["GET", "POST"], endpoint="discussion_topic_create")

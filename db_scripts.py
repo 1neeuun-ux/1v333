@@ -1,4 +1,5 @@
-import sqlite3
+import sqlite3 
+
 import os
 
 path = os.path.join("db.db")
@@ -409,15 +410,24 @@ def get_all_comment(id_discussion: int):
     try:
         if id_discussion <= 0:
             return False
-        
-        cursor.execute("""SELECT id , id_user, id_discussion_topic, text, date  
-                          FROM comment
-                          WHERE id_discussion_topic = ?
-                          ORDER BY id DESC""", (id_discussion,))
+
+        cursor.execute("""
+            SELECT comment.id,
+                   comment.id_user,
+                   comment.id_discussion_topic,
+                   comment.text,
+                   comment.date,
+                   user.email
+            FROM comment
+            JOIN user ON comment.id_user = user.id
+            WHERE comment.id_discussion_topic = ?
+            ORDER BY comment.id DESC
+        """, (id_discussion,))
         return cursor.fetchall()
+
     except Exception as error:
-        print("error add_comment_:", error)
-    return False
+        print("error get_all_comment:", error)
+        return False
 
 
 

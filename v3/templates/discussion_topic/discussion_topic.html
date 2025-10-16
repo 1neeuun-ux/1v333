@@ -1,79 +1,74 @@
 {% extends "base.html" %}
 
+{% block title %}Discussion Topics{% endblock %}
+
 {% block styles %}
-<link href="{{url_for('static',filename='discussion topic/discussion_topic.css') }}" rel="stylesheet">
 <style>
+  .topic-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+    background: #fff;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .topic-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+  }
+  .topic-card-title {
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 8px;
+  }
+  .topic-card-email {
+    color: #777;
+    font-size: 0.9rem;
+  }
+  .card-body {
+    padding: 1rem 1.2rem;
+  }
+  .btn-group .btn {
+    border-radius: 20px !important;
+    margin-right: 6px;
+    padding: 4px 14px;
+    font-weight: 500;
+  }
+  .btn-outline-primary {
+    color: #0d6efd;
+    border-color: #0d6efd;
+  }
+  .btn-outline-primary:hover {
+    background-color: #0d6efd;
+    color: #fff;
+  }
 </style>
-
 {% endblock %}
-{% block scripts %}
-<script>
-</script>
-{% endblock %}
-
-
-{% block title %}discussion topic{% endblock %}
-
 
 {% block main %}
-
-<div class="album py-5 bg-body-tertiary">
+<div class="album py-5 bg-light">
   <div class="container">
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-
-    {% for discussion_topic_id, discussion_topic_title, user_id, user_email in data %}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+      {% for discussion_topic_id, discussion_topic_title, user_id, user_email in data %}
       <div class="col">
-        <div class="card shadow-sm">
-          <svg aria-label="Placeholder: Thumbnail" class="bd-placeholder-img card-img-top" height="225" preserveAspectRatio="xMidYMid slice" role="img" width="100%" xmlns="http://www.w3.org/2000/svg">
-            <title>Placeholder</title>
-            <rect width="100%" height="100%" fill="#55595c"></rect>
-            <text x="50%" y="50%" fill="#eceeef" dy=".3em">{{discussion_topic_title}}</text>
-          </svg>
+        <div class="topic-card">
           <div class="card-body">
-            <p class="card-text">{{user_email}}</p>
-            <div class="d-flex justify-content-between align-items-center">
+            <h5 class="topic-card-title">{{ discussion_topic_title }}</h5>
+            <p class="topic-card-email">{{ user_email }}</p>
+            <div class="d-flex justify-content-between align-items-center mt-3">
               <div class="btn-group">
-                <a href="/discussion_topic/{{discussion_topic_id}}"><button type="button" class="btn btn-sm btn-outline-secondary">View</button></a>
+                <a href="/discussion_topic/{{discussion_topic_id}}">
+                  <button type="button" class="btn btn-sm btn-outline-primary">View</button>
+                </a>
                 <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
               </div>
-              <small class="text-body-secondary">9 mins</small>
+              <small class="text-muted">9 mins</small>
             </div>
           </div>
         </div>
       </div>
-    {% endfor %}
-
+      {% endfor %}
     </div>
   </div>
 </div>
-
-
-<h1>{{topic_title}}</h1>
-<p>{{topic_text}}</p>
-
-
-
-
-
-{% for id_user, user_email, comment_id, comment_text, comment_date in comment_list %}
-<div>
-    {% if creator %}
-    <form method="DELETE" endfor="dell_comment/{{comment_id}}">
-        <button>Удалить</button>
-    </form>
-    {% endif %}
-    <p>{{user_email}}</p>
-    <p>{{comment_text}}</p>
-    <p>{{comment_date}}</p>
-</div>
-{% endfor %}
-
-
-
-
-<form method="POST">
-    <p>Введите комментарий</p>
-    <textarea name="text"></textarea>
-    <input type="submit" value="Submit">
-</form>
 {% endblock %}
