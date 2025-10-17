@@ -96,22 +96,20 @@ def view_discussion_topic(id: int = None):
     )
 
 
-@app.route("/Login", methods=["GET", "POST"], endpoint="Login")
+@app.route("/login", methods=["GET", "POST"])
 def Login():
     if request.method == "POST":
-        login_email = request.form.get("login")
-        password = request.form.get("pass")
+        login_email = request.form.get("email")
+        password = request.form.get("password")
         id_user = db_scripts.login_user(login_email, password)
         if id_user:
             session["id_user"] = id_user
             session["id_email"] = login_email
             return redirect(url_for("discussion_topic"))
-        error = "Error"
-        return render_template("login/login.html", error=error, 
-                           id_user=session.get("id_user"))
-    
-    return render_template("login/login.html", 
-                           id_user=session.get("id_user"))
+        error = "Wrong pass or mail"
+        return render_template("login/login.html", error=error)
+    return render_template("login/login.html")
+
   
 
 
@@ -131,7 +129,6 @@ def Login():
     return render_template("login/Registration.html", error=error, 
                            id_user=session.get("id_user"))
 
- 
 
 
 @app.route("/Exit", endpoint="Exit")
@@ -142,13 +139,17 @@ def Exit():
         del session["id_email"]
     return redirect(url_for("index"))
 
-@app.route("/discussion_topic/<int:topic_id>/delete_comment/<int:id_comment>", methods=["GET","POST"])
-def delete_comment(topic_id,id_comment):
-    if request.method == "POST":
-        id_comment1 = request.form.get("id_comment")
-        print(id_comment1)
-        # db_scripts.del_comment(int(id_comment1))
+@app.route("/discussion_topic/<int:topic_id>/delete_comment/<int:id_comment>", methods=["POST"])
+def delete_comment(topic_id, id_comment):
+    db_scripts.del_comment(id_comment)
     return redirect(f"/discussion_topic/{topic_id}")
+
+
+@app.route("/discussion_topic/<int:id>/save", methods=["POST"])
+def save_topic_text(id):
+    new_text = request.form.get("new_text")
+    db_scripts.update_discussion_text(id, new_text)
+    return redirect(f"/discussion_topic/{id}")
 
 
 app.run(host="0.0.0.0", port=5000)

@@ -1,14 +1,11 @@
 import sqlite3 
 
 import os
-
-path = os.path.join("db.db")
-
+path = os.path.join(os.path.dirname(__file__), "db.db")
 
 db_path = path
 DB = None
 cursor = None
-
 
 def db_deck(funk):
     def open_close(*args, **kwargs):
@@ -389,18 +386,12 @@ def update_comment(id_comment: int, text: str):
         return False
     
     
-@db_deck
-def del_comment(id_comment: int):
-    try:
-        if id_comment <= 0:
-            return False
+def del_comment(id_comment):
+    with sqlite3.connect("db.db") as connection:
+        cursor = connection.cursor()
+        cursor.execute("DELETE FROM comment WHERE id = ?", (id_comment,))
+        connection.commit()
 
-        cursor.execute("DELETE FROM comment WHERE id = ?", (int(id_comment),))
-        cursor.connection.commit() 
-        return cursor.rowcount  
-    except Exception as e:
-        print("Ошибка при удалении комментария:", e)
-        return False
 
 
     
@@ -461,6 +452,25 @@ def del_category_reply(id_reply: int):
     except Exception as error:
         print("error del_category_reply:", error)
     return False
+
+
+@db_deck
+def update_discussion_text(id_discussion_topic: int, new_text: str):
+    try:
+        new_text = new_text.strip()
+        if id_discussion_topic <= 0 or new_text == "":
+            return False
+
+        cursor.execute("""
+            UPDATE discussion_topic
+            SET text = ?
+            WHERE id = ?
+        """, (new_text, id_discussion_topic))
+
+        return True
+    except Exception as e:
+        print("Error update_discussion_text:", e)
+        return False
 
 
 

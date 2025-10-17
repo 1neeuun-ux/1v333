@@ -53,14 +53,13 @@
       <div class="col">
         <div class="topic-card">
           <div class="card-body">
-            <h5 class="topic-card-title">{{ discussion_topic_title }}</h5>
+            <h5 class="topic-card-title">{{ discussion_topic_title|replace("Title", "") }}</h5>
             <p class="topic-card-email">{{ user_email }}</p>
             <div class="d-flex justify-content-between align-items-center mt-3">
               <div class="btn-group">
                 <a href="/discussion_topic/{{discussion_topic_id}}">
                   <button type="button" class="btn btn-sm btn-outline-primary">View</button>
                 </a>
-                <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
               </div>
               <small class="text-muted">9 mins</small>
             </div>

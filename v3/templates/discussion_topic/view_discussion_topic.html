@@ -40,6 +40,7 @@
     border-radius: 12px;
     padding: 15px 20px;
     margin-bottom: 15px;
+    position: relative;
   }
 
   .comment-box p {
@@ -59,6 +60,38 @@
     background-color: #003ed9;
   }
 
+  .btn-reply {
+    background-color: #e0e0e0;
+    color: #333;
+    border: none;
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
+
+  .btn-reply:hover {
+    background-color: #cfcfcf;
+  }
+
+  .btn-delete {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
+
+  .btn-delete:hover {
+    background-color: #b52a36;
+  }
+
   textarea.form-control {
     border-radius: 10px;
   }
@@ -67,31 +100,44 @@
 
 {% block main %}
 <div class="topic-container">
-  <h2 class="topic-title">{{ topic_title }}</h2>
-  <p class="topic-text">{{ topic_text }}</p>
+  <h2 class="topic-title">Title</h2>
+
+  <form method="POST" action="{{ url_for('save_topic_text', id=topic_id) }}">
+    <textarea name="new_text" class="form-control mb-3" rows="4" placeholder="Write">{{ topic_text }}</textarea>
+    <button type="submit" class="btn btn-primary-custom px-4">Save</button>
+  </form>
 
   <h4 class="section-title mt-4">Comments</h4>
 
+
   {% for comment_id, user_id, id_discussion_topic, comment_text, comment_date, comment_user_email in comment_list %}
-    <div class="comment-box">
-      <p><strong>{{ comment_user_email }}</strong></p>
-      <p>{{ comment_text }}</p>
-      <small class="text-muted">{{ comment_date }}</small>
+<div class="comment-box">
+  <p><strong>{{ comment_user_email }}</strong></p>
+  <p>{{ comment_text }}</p>
+  <small class="text-muted">{{ comment_date }}</small>
 
-      {% if creator %}
-        <div class="mt-2">
-          <a href="/discussion_topic/{{id_discussion_topic}}/delete_comment/{{comment_id}}">
-            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-          </a>
-        </div>
-      {% endif %}
-    </div>
-  {% endfor %}
-
-  <h5 class="section-title mt-4">Add a comment</h5>
-  <form method="POST" action="{{ url_for('view_discussion_topic', id=topic_id) }}">
-    <textarea name="text" class="form-control mb-3" rows="3" placeholder="Write your comment here..."></textarea>
-    <button type="submit" class="btn btn-primary-custom px-4">Submit</button>
-  </form>
+  <div style="position: absolute; top: 10px; right: 10px; display: flex; gap: 8px;">
+    <button type="button" class="btn-reply" data-user="{{ comment_user_email }}">Reply</button>
+  
+    <form action="/discussion_topic/{{ id_discussion_topic }}/delete_comment/{{ comment_id }}" method="POST" style="margin: 0;">
+      <button type="submit" class="btn-delete">Delete</button>
+    </form>
+  </div>
 </div>
+{% endfor %}
+
+<h5 class="section-title mt-4">Add comment</h5>
+<form id="commentForm" method="POST" action="{{ url_for('view_discussion_topic', id=topic_id) }}">
+  <textarea name="text" id="commentText" class="form-control mb-3" rows="3" placeholder="Write.."></textarea>
+  <button type="submit" class="btn btn-primary-custom px-4">Send</button>
+</form>
+
+<script>
+  function reply(user) {
+    commentText.value = "Answer " + user + ": ";
+    commentText.focus();
+  }
+  </script>
+  
+</script>
 {% endblock %}
