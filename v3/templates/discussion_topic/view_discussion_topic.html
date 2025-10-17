@@ -101,11 +101,14 @@
 {% block main %}
 <div class="topic-container">
   <h2 class="topic-title">Title</h2>
-
-  <form method="POST" action="{{ url_for('save_topic_text', id=topic_id) }}">
-    <textarea name="new_text" class="form-control mb-3" rows="4" placeholder="Write">{{ topic_text }}</textarea>
-    <button type="submit" class="btn btn-primary-custom px-4">Save</button>
-  </form>
+  {% if creator %}
+    <form method="POST" action="{{ url_for('save_topic_text', id=topic_id) }}">
+      <textarea name="new_text" class="form-control mb-3" rows="4" placeholder="Write">{{ topic_text }}</textarea>
+      <button type="submit" class="btn btn-primary-custom px-4">Save</button>
+    </form>
+  {%else%}
+    <p>{{ topic_text }}</p>
+  {%endif%}
 
   <h4 class="section-title mt-4">Comments</h4>
 
@@ -117,7 +120,7 @@
   <small class="text-muted">{{ comment_date }}</small>
 
   <div style="position: absolute; top: 10px; right: 10px; display: flex; gap: 8px;">
-    <button type="button" class="btn-reply" data-user="{{ comment_user_email }}">Reply</button>
+    <button type="button" class="btn-reply" data-user="{{ comment_user_email }}" onclick="reply('{{ comment_user_email }}')">Reply</button>
   
     <form action="/discussion_topic/{{ id_discussion_topic }}/delete_comment/{{ comment_id }}" method="POST" style="margin: 0;">
       <button type="submit" class="btn-delete">Delete</button>
@@ -137,7 +140,7 @@
     commentText.value = "Answer " + user + ": ";
     commentText.focus();
   }
-  </script>
-  
 </script>
+  
+
 {% endblock %}

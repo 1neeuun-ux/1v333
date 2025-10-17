@@ -173,6 +173,10 @@ def get_category(id_category: int):
 
 @db_deck 
 def get_all_category(): 
+    """
+    category.id; 
+    category.title
+    """
     try:
         cursor.execute("""SELECT * FROM category
                         ORDER BY id

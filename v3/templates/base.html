@@ -69,15 +69,15 @@
   <div class="container">
     <header class="d-flex flex-wrap align-items-center justify-content-between py-3 mb-0 border-bottom">
       <div class="col-md-3 mb-2 mb-md-0">
-        <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
-          <svg class="bi" width="40" height="32" role="img" aria-label="Bootstrap">
-            <use xlink:href="#bootstrap"></use>
-          </svg>
-        </a>
+          <ul class="nav justify-content-center mb-0">
+            <a href="/" class="nav-link px-2 link-secondary fs-5 fw-semibold"><li>Home</li></a>
+            <a href="/discussion_topic/create"class="btn btn-primary rounded-pill"><li>Create Topic</li></a>
+          </ul>
       </div>
 
       <div class="col-md-3 text-end auth-buttons">
         {% if id_user %}
+          <a href="#" class="nav-link px-2 link-secondary fs-5 fw-semibold">{{email}}</a>
           <a href="/Exit" class="btn btn-primary rounded-pill">Exit</a>
         {% else %}
           <a href="/Login" class="btn btn-outline-primary rounded-pill me-2">Login</a>
@@ -85,14 +85,6 @@
         {% endif %}
       </div>
     </header>
-  </div>
-
-  <div class="b-example-divider"></div>
-
-  <div class="container text-center nav-section">
-    <ul class="nav justify-content-center mb-0">
-      <li><a href="/" class="nav-link px-2 link-secondary fs-5 fw-semibold">Home</a></li>
-    </ul>
   </div>
 
   <div class="b-example-divider"></div>

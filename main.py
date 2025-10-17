@@ -32,7 +32,7 @@ def discussion_topic():
     return render_template("discussion_topic/discussion_topic.html", 
                            category_list=category_list, 
                            data=all_discussion_topic, 
-                           id_email=session.get("email_user"),
+                           email=session.get("email_user"),
                            id_user=session.get("id_user")
                            )
 
@@ -56,15 +56,24 @@ def discussion_topic_create():
             return render_template("404.html")
 
     category_list = db_scripts.get_all_category()
-    return render_template("discussion_topic/discussion_topic_create.html", category_list=category_list, id_user=session.get("id_user"))
+    return render_template("discussion_topic/discussion_topic_create.html", 
+                           category_list=category_list, 
+                           email=session.get("email_user"),
+                           id_user=session.get("id_user"))
 
 
 @app.route("/discussion_topic/category/<int:id_category>", endpoint="category_discussion_topic")
 def category_discussion_topic(id_category: int):
-    data = db_scripts.get_category_discussion_topic(id_category)
+    if "id_user" not in session.keys():
+        return redirect(url_for("index"))
+    category_list = db_scripts.get_all_category()
+    all_discussion_topic = db_scripts.get_all_category_or_discussion_topic(id_category=id_category)
     if request.method == "POST":
         pass
-    return render_template("discussion_topic/category_discussion_topic.html", data=data, 
+    return render_template("discussion_topic/discussion_topic.html", 
+                           category_list=category_list, 
+                           data=all_discussion_topic, 
+                           email=session.get("email_user"),
                            id_user=session.get("id_user"))
 
 
@@ -92,11 +101,12 @@ def view_discussion_topic(id: int = None):
         topic_title=data[3],
         topic_text=data[4],
         comment_list=all_comment, 
+        email=session.get("email_user"),
         id_user=session.get("id_user")
     )
 
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/Login", methods=["GET", "POST"])
 def Login():
     if request.method == "POST":
         login_email = request.form.get("email")
@@ -104,7 +114,7 @@ def Login():
         id_user = db_scripts.login_user(login_email, password)
         if id_user:
             session["id_user"] = id_user
-            session["id_email"] = login_email
+            session["email_user"] = login_email.strip()
             return redirect(url_for("discussion_topic"))
         error = "Wrong pass or mail"
         return render_template("login/login.html", error=error)
@@ -114,7 +124,7 @@ def Login():
 
 
 @app.route("/Registration", methods=["GET", "POST"], endpoint="Registration")
-def Login():
+def Registration():
     error = None
     if request.method == "POST":
         login_email = request.form.get("login")
@@ -123,6 +133,7 @@ def Login():
         id_user = db_scripts.registration_user(login_email, password1, password2)
         if id_user:
             session["id_user"] = id_user
+            session["email_user"] = login_email.strip()
             return redirect(url_for("discussion_topic"))
         else:
             error = "Not correcr password"
@@ -135,8 +146,8 @@ def Login():
 def Exit():
     if "id_user" in session.keys():
         del session["id_user"]
-    if "id_email" in session.keys():
-        del session["id_email"]
+    if "email_user" in session.keys():
+        del session["email_user"]
     return redirect(url_for("index"))
 
 @app.route("/discussion_topic/<int:topic_id>/delete_comment/<int:id_comment>", methods=["POST"])

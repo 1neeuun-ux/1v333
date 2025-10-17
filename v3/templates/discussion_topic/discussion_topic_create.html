@@ -1,26 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Discussion Topic</title>
-</head>
-<body>
-    <form method="post">
-        <p>Choose category</p>
+{% extends "base.html" %}
+
+{% block title %}Create Discussion Topic{% endblock %}
+
+{% block styles %}
+<style>
+  .btn-primary-custom {
+    background-color: #0056ff;
+    border: none;
+    color: white;
+    border-radius: 20px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
+  .btn-primary-custom:hover {
+    background-color: #003ed9;
+  }
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="d-flex justify-content-center align-items-center" style="height: 80vh;">
+  <div class="border rounded-4 p-5 shadow-sm" style="width: 350px; background-color: #fff;">
+    <h3 class="text-center mb-4">Topic Crate</h3>
+    <form method="POST" >
+      <div class="mb-3">
+        <label for="email" class="form-label">Choose category:</label>
         <select name="id_category">
             {% for id, title in category_list %}
                 <option value="{{id}}">{{title}}</option>
             {% endfor %}
         </select>
-
-        <p>Put name</p>
-        <input type="text" name="title">
-
-        <p>Put text</p>
-        <textarea name="text"></textarea>
-
-        <input type="submit" value="Submit">
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Topic name:</label>
+        <input type="text" class="form-control"  name="title" >
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Topic text:</label>
+        <textarea class="form-control"  name="text"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary-custom w-100">Crate</button>
     </form>
-</body>
-</html>
+    
+  </div>
+</div>
+{% endblock %}
